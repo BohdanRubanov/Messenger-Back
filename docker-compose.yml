@@ -1,0 +1,38 @@
+services:                         # Section with all services (containers) started by docker-compose
+
+  postgres:                       # Service name (hostname inside the Docker network)
+    image: postgres:15-alpine     # PostgreSQL Docker image version 15 based on Alpine Linux (lightweight and fast)
+
+    container_name: shop_postgres # Explicit container name (convenient for docker ps / docker exec)
+
+    environment:                  # Environment variables read by PostgreSQL during initialization
+      POSTGRES_DB: ${DB_NAME}     # Name of the database created on first startup
+      POSTGRES_USER: ${DB_USER}   # PostgreSQL user
+      POSTGRES_PASSWORD: ${DB_PASSWORD} # PostgreSQL user password
+
+    healthcheck:                  # Container health check (healthy / unhealthy)
+      test:                       # Command executed to perform the check
+        ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+        # pg_isready — PostgreSQL utility
+        # checks whether the database is accepting connections
+        # $$ — escaping so Docker does not substitute variables too early
+
+      interval: 10s               # How often to run the check (every 10 seconds)
+      timeout: 5s                 # Maximum time to wait for a response
+      retries: 5                  # Number of consecutive failed checks allowed
+
+    ports:                        # Port mapping container → host
+      - "5432:5432"               # localhost:5432 → container:5432 (default PostgreSQL port)
+
+    volumes:                      # Volumes and file mounts
+      - postgres_data:/var/lib/postgresql/data
+      # Named volume (persistent storage) for PostgreSQL data
+      # Data is preserved between container restarts
+
+      - ./sql/init.sql:/docker-entrypoint-initdb.d/init.sql
+      # SQL initialization file
+      # Executed ONLY when the database is created for the first time
+      # Usually contains CREATE TABLE, CREATE INDEX, etc.
+
+volumes:                          # Docker volume declarations
+  postgres_data:                  # Named volume for PostgreSQL data
