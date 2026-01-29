@@ -40,6 +40,6 @@ func userIDHandler(handlers *handlers.UserHandler) http.HandlerFunc {
 			handlers.DeleteUser(response, request)
 		default:
 			http.Error(response, "Method not allowed", http.StatusMethodNotAllowed)
-		}
+		} 
 	}
 }
