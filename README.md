@@ -1,4 +1,4 @@
-# lesson-proj — Go REST API (Products + Users/Auth)
+# Messenger-Back — Go REST API (Products + Users/Auth)
 
 A lightweight REST API written in Go with a clean separation of **handlers → services → repositories** and PostgreSQL access via **pgxpool**.
 
